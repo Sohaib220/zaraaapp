@@ -19,10 +19,16 @@ jobs:
       - name: Flutter version
         run: flutter --version
 
-      - name: Get dependencies
+      - name: Get packages
         run: flutter pub get
 
-      - name: Install CocoaPods dependencies
+      - name: Verify iOS files
+        run: |
+          ls -la
+          ls -la ios
+          test -f ios/Podfile
+
+      - name: Install CocoaPods
         run: |
           cd ios
           pod install --repo-update
