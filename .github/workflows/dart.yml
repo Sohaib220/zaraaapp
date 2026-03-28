@@ -3,6 +3,9 @@ name: iOS IPA Build
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-ios:
     runs-on: macos-latest
@@ -10,6 +13,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          submodules: false
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -22,19 +28,31 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Build iOS app (unsigned)
+      - name: Build unsigned iOS app
         run: flutter build ios --release --no-codesign
 
-      - name: Create IPA structure
+      - name: Create IPA payload
         run: |
           mkdir -p Payload
           cp -R build/ios/iphoneos/Runner.app Payload/
 
       - name: Package IPA
-        run: zip -r app-unsigned.ipa Payload
+        run: |
+          cd Payload/..
+          zip -r zaraaapp-ios-unsigned.ipa Payload
 
-      - name: Upload IPA artifact
+      - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ios-ipa
-          path: app-unsigned.ipa
+          name: zaraaapp-ios-ipa
+          path: zaraaapp-ios-unsigned.ipa
+
+      - name: Upload IPA to Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: zaraaapp-ios-unsigned.ipa
+          asset_name: zaraaapp-ios-unsigned.ipa
+          tag: ios-build
+          overwrite: true
+          body: "Unsigned iOS IPA build from GitHub Actions"
