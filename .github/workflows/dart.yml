@@ -19,7 +19,7 @@ jobs:
       - name: Flutter version
         run: flutter --version
 
-      - name: Get packages
+      - name: Get dependencies
         run: flutter pub get
 
       - name: Verify iOS files
@@ -28,12 +28,12 @@ jobs:
           ls -la ios
           test -f ios/Podfile
 
-      - name: Install CocoaPods
+      - name: Install CocoaPods dependencies
         run: |
           cd ios
           pod install --repo-update
 
-      - name: Build unsigned IPA
+      - name: Build IPA
         run: flutter build ipa --release --no-codesign
 
       - name: Upload IPA artifact
