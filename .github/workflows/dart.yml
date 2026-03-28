@@ -22,16 +22,8 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Verify iOS files
-        run: |
-          ls -la
-          ls -la ios
-          test -f ios/Podfile
-
-      - name: Install CocoaPods dependencies
-        run: |
-          cd ios
-          pod install --repo-update
+      - name: Show iOS folder
+        run: ls -la ios
 
       - name: Build IPA
         run: flutter build ipa --release --no-codesign
